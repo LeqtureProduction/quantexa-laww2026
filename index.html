@@ -97,6 +97,23 @@
   .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
   .hero-ctas .btn-ghost{border-color:rgba(255,255,255,.4);color:#fff;}
   .hero-ctas .btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+  .next-up{
+    background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:18px;
+    padding:20px 22px;max-width:520px;
+  }
+  .next-up-eyebrow{
+    display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:1px;
+    text-transform:uppercase;color:var(--teal);margin-bottom:14px;
+  }
+  .next-up-body{display:flex;align-items:center;gap:14px;}
+  .next-up-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#3a1a63;}
+  .next-up-info b{display:block;font-size:15px;color:#fff;line-height:1.35;}
+  .next-up-info span{font-size:13px;color:rgba(255,255,255,.65);}
+  .next-up-time{
+    margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);
+    font-size:15px;color:#fff;
+  }
+  .next-up-time b{color:var(--teal);}
 
   /* ---------- Hero player + chat ---------- */
   .hero-right{min-width:0;}
@@ -320,6 +337,17 @@
         <div class="stat"><b>5 days</b><span>6&ndash;10 July 2026</span></div>
         <div class="stat"><b>11 sessions</b><span>Live &amp; on demand</span></div>
         <div class="stat"><b>Global</b><span>Hosted on UK time</span></div>
+      </div>
+      <div class="next-up">
+        <span class="next-up-eyebrow"><span class="tdot"></span>Next live session</span>
+        <div class="next-up-body">
+          <img class="next-up-avatar" id="next-up-avatar" alt="Karim Benammar">
+          <div class="next-up-info">
+            <b>Reframing AI: exploring radically different ways of working</b>
+            <span>Karim Benammar &middot; Author &amp; Philosopher</span>
+          </div>
+        </div>
+        <div class="next-up-time">Streaming <b>Monday 6 July &middot; 15:00 UK time</b></div>
       </div>
     </div>
     <div class="hero-right">
@@ -655,6 +683,9 @@ function toggleItem(i){
 
 renderProgramme();
 renderRecordings();
+
+var nextUpAvatar = document.getElementById('next-up-avatar');
+if(nextUpAvatar && PHOTOS.karim) nextUpAvatar.src = PHOTOS.karim;
 </script>
 <script>
 (function(){
