@@ -270,6 +270,10 @@
   .rec-body h4{font-size:15.5px;font-weight:700;line-height:1.35;}
   @media(max-width:700px){.rec-grid{grid-template-columns:1fr;}}
 
+  /* ---------- Recording video embed ---------- */
+  .rec-thumb-video{padding:0;background:#000;}
+  .rec-thumb-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;}
+
   /* ---------- Footer ---------- */
   footer{background:var(--ink);color:#fff;padding:70px 0 0;}
   .foot-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:48px;}
@@ -338,14 +342,11 @@
         <div class="stat"><b>11 sessions</b><span>Live &amp; on demand</span></div>
         <div class="stat"><b>Global</b><span>Hosted on UK time</span></div>
       </div>
-      <div class="player-frame" id="hero-left-player">
-        <iframe src="https://player.vimeo.com/video/1207313054?h=7f78c9d9af&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Learning at Work Week &mdash; recorded session"></iframe>
-      </div>
     </div>
     <div class="hero-right">
       <div class="player-card">
         <div class="player-frame" id="player-slot">
-          <iframe src="https://teams.microsoft.com/convene/townhall?eventId=e5433812-b003-4b78-8584-60850f839069@3b1678f4-6247-41c3-8632-a82c85c20e2d&amp;sessionId=e987400b-c25f-4591-a7b8-5b2282f7c8db" frameborder="0" scrolling="no" allow="autoplay; camera; microphone" allowfullscreen title="Learning at Work Week &mdash; live stream"></iframe>
+          <iframe src="https://player.vimeo.com/video/1207313054?h=7f78c9d9af&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Learning at Work Week &mdash; recorded session"></iframe>
         </div>
       </div>
       <div class="chat-card">
@@ -653,18 +654,26 @@ function renderProgramme(){
 function renderRecordings(){
   const grid = document.getElementById('rec-grid');
   const featured = sessions.filter(s => s.title.includes("Reframing AI") || s.title.includes("Critical Thinking"));
-  grid.innerHTML = featured.map(s=>`
-    <div class="rec-card">
-      <div class="rec-thumb">
-        <div class="stack">${s.speakers.map(p=>avatar(p,'lg')).join('')}</div>
-        <span class="rec-badge">Available soon</span>
+  grid.innerHTML = featured.map(s=>{
+    const isKarim = s.title.includes("Reframing AI");
+    const thumb = isKarim
+      ? `<div class="rec-thumb rec-thumb-video">
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/Qje15u9_hAw?si=DBLIMO4s4Bvl0-eY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>`
+      : `<div class="rec-thumb">
+          <div class="stack">${s.speakers.map(p=>avatar(p,'lg')).join('')}</div>
+          <span class="rec-badge">Available soon</span>
+        </div>`;
+    return `
+      <div class="rec-card">
+        ${thumb}
+        <div class="rec-body">
+          <div class="when">${speakerNames(s)} · ${s.day}</div>
+          <h4>${s.title}</h4>
+        </div>
       </div>
-      <div class="rec-body">
-        <div class="when">${speakerNames(s)} · ${s.day}</div>
-        <h4>${s.title}</h4>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function toggleItem(i){
