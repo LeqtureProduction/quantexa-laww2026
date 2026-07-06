@@ -338,16 +338,8 @@
         <div class="stat"><b>11 sessions</b><span>Live &amp; on demand</span></div>
         <div class="stat"><b>Global</b><span>Hosted on UK time</span></div>
       </div>
-      <div class="next-up">
-        <span class="next-up-eyebrow"><span class="tdot"></span>Next live session</span>
-        <div class="next-up-body">
-          <img class="next-up-avatar" id="next-up-avatar" alt="Karim Benammar">
-          <div class="next-up-info">
-            <b>Reframing AI: exploring radically different ways of working</b>
-            <span>Karim Benammar &middot; Author &amp; Philosopher</span>
-          </div>
-        </div>
-        <div class="next-up-time">Streaming <b>Monday 6 July &middot; 15:00 UK time</b></div>
+      <div class="player-frame" id="hero-left-player">
+        <iframe src="https://player.vimeo.com/video/1207313054?h=7f78c9d9af&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" allowfullscreen title="Learning at Work Week &mdash; recorded session"></iframe>
       </div>
     </div>
     <div class="hero-right">
@@ -683,9 +675,6 @@ function toggleItem(i){
 
 renderProgramme();
 renderRecordings();
-
-var nextUpAvatar = document.getElementById('next-up-avatar');
-if(nextUpAvatar && PHOTOS.karim) nextUpAvatar.src = PHOTOS.karim;
 </script>
 <script>
 (function(){
