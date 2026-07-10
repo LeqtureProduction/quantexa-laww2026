@@ -653,12 +653,17 @@ function renderProgramme(){
 
 function renderRecordings(){
   const grid = document.getElementById('rec-grid');
+  const RECORDINGS = {
+    "Reframing AI": { id: "Qje15u9_hAw", si: "DBLIMO4s4Bvl0-eY" },
+    "Critical Thinking": { id: "aavMoVJvuQ4" }
+  };
   const featured = sessions.filter(s => s.title.includes("Reframing AI") || s.title.includes("Critical Thinking"));
   grid.innerHTML = featured.map(s=>{
-    const isKarim = s.title.includes("Reframing AI");
-    const thumb = isKarim
+    const key = Object.keys(RECORDINGS).find(k => s.title.includes(k));
+    const rec = key ? RECORDINGS[key] : null;
+    const thumb = rec
       ? `<div class="rec-thumb rec-thumb-video">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/Qje15u9_hAw?si=DBLIMO4s4Bvl0-eY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/${rec.id}${rec.si ? '?si=' + rec.si : ''}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>`
       : `<div class="rec-thumb">
           <div class="stack">${s.speakers.map(p=>avatar(p,'lg')).join('')}</div>

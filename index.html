@@ -653,12 +653,17 @@ function renderProgramme(){
 
 function renderRecordings(){
   const grid = document.getElementById('rec-grid');
+  const RECORDINGS = {
+    "Reframing AI": { id: "Qje15u9_hAw", si: "DBLIMO4s4Bvl0-eY" },
+    "Critical Thinking": { id: "aavMoVJvuQ4" }
+  };
   const featured = sessions.filter(s => s.title.includes("Reframing AI") || s.title.includes("Critical Thinking"));
   grid.innerHTML = featured.map(s=>{
-    const isKarim = s.title.includes("Reframing AI");
-    const thumb = isKarim
+    const key = Object.keys(RECORDINGS).find(k => s.title.includes(k));
+    const rec = key ? RECORDINGS[key] : null;
+    const thumb = rec
       ? `<div class="rec-thumb rec-thumb-video">
-          <iframe width="560" height="315" src="https://www.youtube.com/embed/Qje15u9_hAw?si=DBLIMO4s4Bvl0-eY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/${rec.id}${rec.si ? '?si=' + rec.si : ''}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>`
       : `<div class="rec-thumb">
           <div class="stack">${s.speakers.map(p=>avatar(p,'lg')).join('')}</div>
@@ -692,19 +697,79 @@ renderRecordings();
   var messages = document.getElementById('chat-messages');
   var empty = document.getElementById('chat-empty');
   if(!form) return;
+
+  var API = '/api/messages';
+  var POLL_MS = 5500;
+  var renderedIds = Object.create(null);
+  var myMessageIds = Object.create(null);
+  var pollTimer = null;
+
+  function fmtName(id){
+    return myMessageIds[id] ? 'You' : 'Anonymous';
+  }
+
+  function appendMessage(item){
+    if(renderedIds[item.id]) return;
+    renderedIds[item.id] = true;
+    if(empty){ empty.remove(); empty = null; }
+    var msg = document.createElement('div');
+    msg.className = 'chat-msg';
+    msg.innerHTML = '<b></b><span></span>';
+    msg.querySelector('b').textContent = fmtName(item.id);
+    msg.querySelector('span').textContent = item.text;
+    messages.appendChild(msg);
+  }
+
+  function renderList(list){
+    var wasAtBottom = (messages.scrollHeight - messages.scrollTop - messages.clientHeight) < 40;
+    list
+      .slice()
+      .sort(function(a,b){ return a.created_at - b.created_at; })
+      .forEach(appendMessage);
+    if(wasAtBottom){ messages.scrollTop = messages.scrollHeight; }
+  }
+
+  function loadMessages(){
+    fetch(API, { cache: 'no-store' })
+      .then(function(res){ return res.ok ? res.json() : []; })
+      .then(function(list){ renderList(list || []); })
+      .catch(function(){ /* silently ignore poll failures */ });
+  }
+
+  function startPolling(){
+    if(pollTimer) return;
+    pollTimer = setInterval(function(){
+      if(!document.hidden) loadMessages();
+    }, POLL_MS);
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden) loadMessages();
+  });
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var text = input.value.trim();
     if(!text) return;
-    if(empty){ empty.remove(); empty = null; }
-    var msg = document.createElement('div');
-    msg.className = 'chat-msg';
-    msg.innerHTML = '<b>You</b><span></span>';
-    msg.querySelector('span').textContent = text;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
     input.value = '';
+    fetch(API, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ text: text })
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        if(data && data.ok && data.message){
+          myMessageIds[data.message.id] = true;
+          appendMessage(data.message);
+          messages.scrollTop = messages.scrollHeight;
+        }
+      })
+      .catch(function(){ /* send failed silently; user can retry */ });
   });
+
+  loadMessages();
+  startPolling();
 })();
 </script>
 </body>
